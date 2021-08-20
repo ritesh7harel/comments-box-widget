@@ -9,14 +9,17 @@ import {
     Reply,
     Time,
     Details,
-    Dot
+    Dot,
+    Delete
 } from './Comment.style';
 import Avatar from "../Avatar/Avatar";
 import UserInfo from "../../state/UserInfo";
+import {formatCommentTime} from '../../util';
 
-const Comment = ({comment, onClickReply, onClickLike}) => {
-    const {authorName, text, time, likes, id} = comment;
+const Comment = ({comment, onClickReply, onClickLike, onClickDelete}) => {
+    const {authorName, text, time, likes, id, authorId} = comment;
     const isLiked = likes.includes(UserInfo.id);
+    const isOwn = UserInfo.id === authorId;
 
     return <Container>
         <Avatar name={authorName}/>
@@ -30,16 +33,26 @@ const Comment = ({comment, onClickReply, onClickLike}) => {
                 </CommentText>
             </Details>
             <Actions>
-                <Like href="#" isLiked={isLiked} onClick={() => onClickLike(id, isLiked)}>
+                <Like href="#" isLiked={isLiked} onClick={(e) => {
+                    e.preventDefault();
+                    onClickLike(id, isLiked);
+                }}>
                     Like
                 </Like>
                 <Dot/>
-                <Reply href="#" onClick={() => onClickReply(id)}>
+                <Reply href="#" onClick={(e) => {
+                    e.preventDefault();
+                    onClickReply(id);
+                }}>
                     Reply
                 </Reply>
                 <Dot/>
+                {isOwn && <><Delete onClick={(e) => {
+                    e.preventDefault();
+                    onClickDelete(id);
+                }}>Delete</Delete> <Dot/></>}
                 <Time>
-                    {time}
+                    {formatCommentTime(new Date(time))}
                 </Time>
             </Actions>
         </RightPart>

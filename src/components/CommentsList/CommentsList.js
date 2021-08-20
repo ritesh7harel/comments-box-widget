@@ -17,7 +17,6 @@ const CommentsList = ({comments}) => {
         };
 
         const onClickLike = (id, isLiked) => {
-            console.log({id, isLiked});
             if (isLiked) {
                 dispatch({type: "UNLIKE", payload: {id: id}});
             } else {
@@ -25,13 +24,18 @@ const CommentsList = ({comments}) => {
             }
         };
 
+        const onClickDelete = (id) => {
+            dispatch({type: "DELETE", payload: {id: id}});
+        };
+
         const onEnterReply = (replyText, parentId) => {
+            const currentDate = new Date().toISOString();
             const newReply = {
                 id: _.uniqueId(),
                 authorId: UserInfo.id,
                 authorName: UserInfo.name,
                 text: replyText,
-                time: "today",
+                time: currentDate,
                 likes: [],
                 replies: [],
             }
@@ -45,8 +49,13 @@ const CommentsList = ({comments}) => {
                     return (
                         <div key={`parent_${eachComment.id}`}>
                             <ListItem key={`comment_${eachComment.id}`}>
-                                <Comment comment={eachComment} onClickReply={onClickReply} onClickLike={onClickLike}
-                                         key={eachComment.id}/>
+                                <Comment
+                                    comment={eachComment}
+                                    onClickReply={onClickReply}
+                                    onClickLike={onClickLike}
+                                    onClickDelete={onClickDelete}
+                                    key={eachComment.id}
+                                />
                             </ListItem>
                             {eachComment.replies.length > 0 && renderComments(eachComment.replies)}
                             {replyIds[eachComment.id] &&

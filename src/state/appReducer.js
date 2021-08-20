@@ -33,23 +33,54 @@ const removeLike = (allComments, id) => {
     return allComments;
 };
 
+const deleteComment = (allComments, id) => {
+    allComments = allComments.filter((item) => {
+        if (item.id === id) {
+            return false;
+        }
+        item.replies = deleteComment(item.replies, id);
+        return true;
+    });
+
+    return allComments;
+}
+
+const updateLocalStorage = (updatedStateComments) => {
+    localStorage.setItem('allComments', JSON.stringify(updatedStateComments));
+};
+
 const reducer = (state, action) => {
+    let updatedStateComments = [];
     switch (action.type) {
         case "ADD_COMMENT":
+            updatedStateComments = [action.payload, ...state.allComments];
+            updateLocalStorage(updatedStateComments);
             return {
-                allComments: [...state.allComments, action.payload],
+                allComments: updatedStateComments,
             };
         case "ADD_REPLY":
+            updatedStateComments = [...addReply(state.allComments, action.payload.newReply, action.payload.parentId)];
+            updateLocalStorage(updatedStateComments);
             return {
-                allComments: [...addReply(state.allComments, action.payload.newReply, action.payload.parentId)],
+                allComments: updatedStateComments,
             };
         case "LIKE":
+            updatedStateComments = [...addLike(state.allComments, action.payload.id)];
+            updateLocalStorage(updatedStateComments);
             return {
-                allComments: [...addLike(state.allComments, action.payload.id)],
+                allComments: updatedStateComments,
             };
         case "UNLIKE":
+            updatedStateComments = [...removeLike(state.allComments, action.payload.id)];
+            updateLocalStorage(updatedStateComments);
             return {
-                allComments: [...removeLike(state.allComments, action.payload.id)],
+                allComments: updatedStateComments,
+            };
+        case "DELETE":
+            updatedStateComments = [...deleteComment(state.allComments, action.payload.id)];
+            updateLocalStorage(updatedStateComments);
+            return {
+                allComments: updatedStateComments,
             };
         default:
             throw new Error();

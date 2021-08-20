@@ -9,14 +9,13 @@ import UserInfo from "../../state/UserInfo";
 const CommentsBox = () => {
     const [{allComments}, dispatch] = useContext(AppContext);
 
-    console.log({allComments});
     const onEnterComment = (commentText) => {
         const newComment = {
             id: _.uniqueId(),
             authorId: UserInfo.id,
             authorName: UserInfo.name,
             text: commentText,
-            time: "today",
+            time: new Date().toISOString(),
             likes: [],
             replies: [],
         }

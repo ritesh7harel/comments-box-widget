@@ -52,6 +52,10 @@ export const Reply = styled(LinkStyle)`
    padding-left: 5px;
 `;
 
+export const Delete = styled(LinkStyle)`
+   padding-left: 5px;
+`;
+
 export const Time = styled.div`
     padding-left: 5px;
     font-size: 14px;
