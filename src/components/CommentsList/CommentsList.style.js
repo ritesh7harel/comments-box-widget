@@ -7,6 +7,9 @@ export const Container = styled.ul`
   padding: 0;
 `;
 
+export const CommentsSection = styled.div`
+  margin-left: -40px;
+`;
 
 export const InputReplyWrapper = styled.div`
   margin-left: 35px;

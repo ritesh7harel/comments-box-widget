@@ -1,3 +1,6 @@
+import _ from "lodash";
+import UserInfo from "../state/UserInfo";
+
 export const getInitials = (text) => {
     const allnames = text.split(' ');
     if (allnames.length >= 2) {
@@ -31,4 +34,16 @@ export const formatCommentTime = (date) => {
         return Math.floor(interval) + " m";
     }
     return "a few seconds ago";
+}
+
+export const createCommentObject = (commentText) => {
+    return {
+        id: _.uniqueId(),
+        authorId: UserInfo.id,
+        authorName: UserInfo.name,
+        text: commentText,
+        time: new Date().toISOString(),
+        likes: [],
+        replies: [],
+    };
 }

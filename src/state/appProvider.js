@@ -16,7 +16,7 @@ const data = [
                 authorId: 2,
                 authorName: "Vaibhav T",
                 text: "Here is my comment 12",
-                time: "2021-08-20T11:55:35.788Z",
+                time: "2021-08-20T07:30:35.788Z",
                 likes: [1, 4],
                 replies: [
                     {

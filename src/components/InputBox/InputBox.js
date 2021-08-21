@@ -1,19 +1,28 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {InputComment, InputContainer} from './InputBox.style';
 import Avatar from "../Avatar/Avatar";
 
-const InputBox = ({userName, onEnter, placeHolder, onTagUsers}) => {
+const InputBox = ({userName, onEnter, placeHolder, onTagUsers, tagName}) => {
     const [inputText, setInputText] = useState('');
 
     const onChange = (e) => {
         const inputValue = e.target.value;
         if (inputValue === '@' && onTagUsers) {
-            onTagUsers();
+            onTagUsers(true);
             setInputText(inputValue)
         } else {
             setInputText(inputValue)
         }
     };
+
+    useEffect(() => {
+        if (tagName) {
+            let temp = inputText;
+            temp = temp.replace('@', tagName);
+            setInputText(temp);
+        }
+    }, [tagName])
+
 
     return (<InputContainer>
         <Avatar name={userName}/>

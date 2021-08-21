@@ -1,11 +1,11 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useState, useEffect, useCallback} from 'react';
 import Comment from "../Comment/Comment";
 import InputBox from "../InputBox/InputBox";
-import {Container, InputReplyWrapper, ListItem} from './CommentsList.style';
+import {Container, InputReplyWrapper, ListItem, CommentsSection} from './CommentsList.style';
 import AppContext from "../../state/appContext";
-import _ from "lodash";
 import UserInfo from "../../state/UserInfo";
 import TagUsers from "../TagUsers/TagUsers";
+import {createCommentObject} from "../../util";
 
 const CommentsList = ({comments}) => {
         const [, dispatch] = useContext(AppContext);
@@ -13,6 +13,7 @@ const CommentsList = ({comments}) => {
         const [activeTag, setActiveTag] = useState(0);
         const [showTagUsers, setShoTagUsers] = useState(false);
         const [threadUsers, setThreadUsers] = useState([]);
+        const [inputWithTagName, updateInputWithTagName] = useState('');
 
         const onClickReply = (id) => {
             if (!replyIds[id]) {
@@ -22,7 +23,9 @@ const CommentsList = ({comments}) => {
 
         const addUsersInTagThread = (comments, users) => {
             comments.forEach((eachComment) => {
-                users.push({id: eachComment.authorId, authorName: eachComment.authorName});
+                if (eachComment.authorId !== UserInfo.id) {
+                    users.push({id: eachComment.authorId, authorName: eachComment.authorName});
+                }
                 if (eachComment.replies.length > 0) {
                     addUsersInTagThread(eachComment.replies, users);
                 }
@@ -47,18 +50,10 @@ const CommentsList = ({comments}) => {
         };
 
         const onEnterReply = (replyText, parentId) => {
-            const currentDate = new Date().toISOString();
-            const newReply = {
-                id: _.uniqueId(),
-                authorId: UserInfo.id,
-                authorName: UserInfo.name,
-                text: replyText,
-                time: currentDate,
-                likes: [],
-                replies: [],
+            if(replyText){
+                dispatch({type: "ADD_REPLY", payload: {newReply: createCommentObject(replyText), parentId: parentId}});
+                delete replyIds[parentId];
             }
-            dispatch({type: "ADD_REPLY", payload: {newReply: newReply, parentId: parentId}});
-            delete replyIds[parentId];
         };
 
         const onTagUsers = (action) => {
@@ -66,7 +61,11 @@ const CommentsList = ({comments}) => {
                 setActiveTag(activeTag + 1);
             } else if (action === 38 && activeTag > 0) {
                 setActiveTag(activeTag - 1);
-            } else {
+            } else if (action === 39) {
+                setShoTagUsers(false);
+                updateInputWithTagName(threadUsers[activeTag].authorName);
+                setActiveTag(0);
+            } else if (action === true) {
                 setShoTagUsers(true);
             }
         };
@@ -89,10 +88,11 @@ const CommentsList = ({comments}) => {
                             {replyIds[eachComment.id] &&
                             <InputReplyWrapper>
                                 <InputBox
-                                    userName="Ritesh"
+                                    userName={UserInfo.name}
                                     placeHolder="Write a reply..."
                                     onEnter={(text) => onEnterReply(text, eachComment.id)}
                                     onTagUsers={onTagUsers}
+                                    tagName={inputWithTagName}
                                 />
                                 {showTagUsers && <TagUsers users={threadUsers} active={activeTag}/>}
                             </InputReplyWrapper>}
@@ -102,7 +102,7 @@ const CommentsList = ({comments}) => {
             </Container>
         }
 
-        return <div>{renderComments(comments)}</div>
+        return <CommentsSection>{renderComments(comments)}</CommentsSection>
     }
 ;
 

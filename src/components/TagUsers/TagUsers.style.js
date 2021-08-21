@@ -17,5 +17,5 @@ export const UsersList = styled.ul`
 `
 
 export const UserListItem = styled.li`
-    color: ${props => props.isActive ? "#59C09C" : "#65676B"};
+    color: ${props => props.isActive ? "#59C09C" : "white"};
 `
