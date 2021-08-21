@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect, useCallback} from 'react';
+import React, {useContext, useState, useEffect, createRef} from 'react';
 import Comment from "../Comment/Comment";
 import InputBox from "../InputBox/InputBox";
 import {Container, InputReplyWrapper, ListItem, CommentsSection} from './CommentsList.style';
@@ -10,16 +10,26 @@ import {createCommentObject} from "../../util";
 const CommentsList = ({comments}) => {
         const [, dispatch] = useContext(AppContext);
         const [replyIds, setReplyIds] = useState({});
+        const [latestReplyId, setLatestReplyId] = useState('');
         const [activeTag, setActiveTag] = useState(0);
         const [showTagUsers, setShoTagUsers] = useState(false);
         const [threadUsers, setThreadUsers] = useState([]);
+        const [inputReplyRefs, setInputReplyRefs] = useState({});
         const [inputWithTagName, updateInputWithTagName] = useState('');
 
         const onClickReply = (id) => {
             if (!replyIds[id]) {
+                setInputReplyRefs({...inputReplyRefs, [id]: createRef()});
+                setLatestReplyId(id);
                 setReplyIds({...replyIds, [id]: true});
             }
         };
+
+        useEffect(() => {
+            if (inputReplyRefs[latestReplyId]) {
+                inputReplyRefs[latestReplyId].current.focus();
+            }
+        }, [inputReplyRefs]);
 
         const addUsersInTagThread = (comments, users) => {
             comments.forEach((eachComment) => {
@@ -50,7 +60,7 @@ const CommentsList = ({comments}) => {
         };
 
         const onEnterReply = (replyText, parentId) => {
-            if(replyText){
+            if (replyText) {
                 dispatch({type: "ADD_REPLY", payload: {newReply: createCommentObject(replyText), parentId: parentId}});
                 delete replyIds[parentId];
             }
@@ -89,6 +99,7 @@ const CommentsList = ({comments}) => {
                             <InputReplyWrapper>
                                 <InputBox
                                     userName={UserInfo.name}
+                                    inputRef={inputReplyRefs[eachComment.id]}
                                     placeHolder="Write a reply..."
                                     onEnter={(text) => onEnterReply(text, eachComment.id)}
                                     onTagUsers={onTagUsers}

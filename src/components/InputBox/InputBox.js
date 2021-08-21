@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {InputComment, InputContainer} from './InputBox.style';
 import Avatar from "../Avatar/Avatar";
 
-const InputBox = ({userName, onEnter, placeHolder, onTagUsers, tagName}) => {
+const InputBox = ({userName, onEnter, placeHolder, onTagUsers, tagName, inputRef}) => {
     const [inputText, setInputText] = useState('');
 
     const onChange = (e) => {
@@ -30,6 +30,7 @@ const InputBox = ({userName, onEnter, placeHolder, onTagUsers, tagName}) => {
             type="text"
             name="inputBox"
             id="inputBox"
+            ref={inputRef}
             autoComplete="off"
             value={inputText}
             placeholder={placeHolder || "Write a comment..."}
